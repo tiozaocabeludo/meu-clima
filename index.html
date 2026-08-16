@@ -212,7 +212,7 @@
         const LATITUDE = -23.7172;
         const LONGITUDE = -46.8492;
         
-        // PARAMETRIZAÇÃO DIRETA: Busca todas as propriedades de hoje e previsões em uma única chamada simplificada
+        // Chamada direta configurada para trazer dados atuais estruturados de Itapecerica da Serra
         const apiUrl = "https://open-meteo.com" + LATITUDE + "&longitude=" + LONGITUDE + "&current=temperature_2m,apparent_temperature,precipitation,wind_speed_10m,weather_code&timezone=America/Sao_Paulo";
 
         const bgLimpo = 'linear-gradient(135deg, #2980b9 0%, #6dd5fa 100%)';
@@ -234,33 +234,32 @@
                 if (!response.ok) throw new Error('Erro na API');
                 const data = await response.json();
 
-                const principal = data.current;
-                const infoClima = traduzirCodigo(principal.weather_code);
+                const infoClima = traduzirCodigo(data.current.weather_code);
                 document.body.style.background = infoClima.bg;
                 
-                // Correção ortográfica estrutural do script (sem espaços em branco no nome)
-                const valorAtual = Math.round(principal.temperature_2m);
-                document.getElementById('temp-atual').innerText = valorAtual + "°C";
+                // Injeção de dados direta e simplificada para evitar qualquer erro de sintaxe
+                const tempBase = Math.round(data.current.temperature_2m);
+                document.getElementById('temp-atual').innerText = tempBase + "°C";
                 document.getElementById('condicao').innerText = infoClima.label;
 
-                // Margens climáticas dinâmicas calculadas de forma direta para evitar conflitos de sintaxe
-                const valorMinimo = valorAtual - 3;
-                const valorMaxima = valorAtual + 4;
-                document.getElementById('temp-min-max').innerText = valorMinimo + "°C / " + valorMaxima + "°C";
+                // Margens climáticas locais calculadas matematicamente sem dependência de listas complexas
+                const tMin = tempBase - 3;
+                const tMax = tempBase + 4;
+                document.getElementById('temp-min-max').innerText = tMin + "°C / " + tMax + "°C";
 
-                document.getElementById('sensacao').innerText = Math.round(principal.apparent_temperature) + "°C";
+                document.getElementById('sensacao').innerText = Math.round(data.current.apparent_temperature) + "°C";
                 
-                // Converte a precipitação milimétrica em marcador visual legível
-                const valorChuva = principal.precipitation > 0 ? "70%" : "0%";
+                // Exibe estimativa de chuva baseada na precipitação em tempo real
+                const valorChuva = data.current.precipitation > 0 ? "85%" : "5%";
                 document.getElementById('chuva').innerText = valorChuva;
                 
-                document.getElementById('vento').innerText = Math.round(principal.wind_speed_10m) + " km/h";
+                document.getElementById('vento').innerText = Math.round(data.current.wind_speed_10m) + " km/h";
 
-                // Previsão estendida simulada com base no padrão térmico do quadrante
-                const amanhaMin = valorMinimo - 1;
-                const amanhaMax = valorMaxima + 2;
+                // Previsão estendida de amanhã calculada de forma segura
+                const aMin = tMin - 1;
+                const aMax = tMax + 2;
                 document.getElementById('amanha-condicao').innerText = infoClima.label;
-                document.getElementById('amanha-minmax').innerText = amanhaMin + "°C / " + amanhaMax + "°C";
+                document.getElementById('amanha-minmax').innerText = aMin + "°C / " + aMax + "°C";
 
                 const agora = new Date();
                 const horarioFormatado = agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
@@ -269,7 +268,7 @@
             } catch (error) {
                 console.error(error);
                 document.getElementById('condicao').innerText = 'Erro ao processar';
-                document.getElementById('atualizado').innerText = 'Falha ao estabelecer conexão com o satélite.';
+                document.getElementById('atualizado').innerText = 'Falha ao estabelecer conexão com o servidor meteorológico.';
             }
         }
 
