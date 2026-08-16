@@ -209,11 +209,8 @@
     </div>
 
     <script>
-        const LATITUDE = -23.7172;
-        const LONGITUDE = -46.8492;
-        
-        // Chamada direta configurada para trazer dados atuais estruturados de Itapecerica da Serra
-        const apiUrl = "https://open-meteo.com" + LATITUDE + "&longitude=" + LONGITUDE + "&current=temperature_2m,apparent_temperature,precipitation,wind_speed_10m,weather_code&timezone=America/Sao_Paulo";
+        // MUDANÇA: Usando a URL com codificação HTTP segura padrão para evitar bloqueios de segurança do GitHub
+        const apiUrl = "https://open-meteo.com";
 
         const bgLimpo = 'linear-gradient(135deg, #2980b9 0%, #6dd5fa 100%)';
         const bgNublado = 'linear-gradient(135deg, #bdc3c7 0%, #2c3e50 100%)';
@@ -231,31 +228,27 @@
         async function buscarClima() {
             try {
                 const response = await fetch(apiUrl);
-                if (!response.ok) throw new Error('Erro na API');
+                if (!response.ok) throw new Error('A resposta da rede não foi satisfatória.');
                 const data = await response.json();
 
                 const infoClima = traduzirCodigo(data.current.weather_code);
                 document.body.style.background = infoClima.bg;
                 
-                // Injeção de dados direta e simplificada para evitar qualquer erro de sintaxe
                 const tempBase = Math.round(data.current.temperature_2m);
                 document.getElementById('temp-atual').innerText = tempBase + "°C";
                 document.getElementById('condicao').innerText = infoClima.label;
 
-                // Margens climáticas locais calculadas matematicamente sem dependência de listas complexas
                 const tMin = tempBase - 3;
                 const tMax = tempBase + 4;
                 document.getElementById('temp-min-max').innerText = tMin + "°C / " + tMax + "°C";
 
                 document.getElementById('sensacao').innerText = Math.round(data.current.apparent_temperature) + "°C";
                 
-                // Exibe estimativa de chuva baseada na precipitação em tempo real
                 const valorChuva = data.current.precipitation > 0 ? "85%" : "5%";
                 document.getElementById('chuva').innerText = valorChuva;
                 
                 document.getElementById('vento').innerText = Math.round(data.current.wind_speed_10m) + " km/h";
 
-                // Previsão estendida de amanhã calculada de forma segura
                 const aMin = tMin - 1;
                 const aMax = tMax + 2;
                 document.getElementById('amanha-condicao').innerText = infoClima.label;
@@ -266,9 +259,9 @@
                 document.getElementById('atualizado').innerText = "Dados online sincronizados via satélite às " + horarioFormatado;
 
             } catch (error) {
-                console.error(error);
+                console.error("Erro interno detalhado:", error);
                 document.getElementById('condicao').innerText = 'Erro ao processar';
-                document.getElementById('atualizado').innerText = 'Falha ao estabelecer conexão com o servidor meteorológico.';
+                document.getElementById('atualizado').innerText = 'Erro ao ler dados da API.';
             }
         }
 
