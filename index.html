@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clima em Itapecerica da Serra</title>
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            --card-bg: rgba(255, 255, 255, 0.1);
+            --card-border: rgba(255, 255, 255, 0.15);
+            --text-color: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.8);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            transition: background 1s ease;
+        }
+
+        .container {
+            background: var(--card-bg);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: 35px 30px;
+            width: 100%;
+            max-width: 450px;
+            box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.25);
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        header p {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+        }
+
+        .main-temp {
+            margin-bottom: 35px;
+        }
+
+        .temp-atual {
+            font-size: 4.5rem;
+            font-weight: 700;
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+
+        .condicao {
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+
+        .grid-info {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .info-card {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 18px 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: transform 0.2s, background 0.2s;
+        }
+
+        .info-card:hover {
+            transform: translateY(-3px);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .info-icon {
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+        }
+
+        .info-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 4px;
+        }
+
+        .info-value {
+            font-size: 1.15rem;
+            font-weight: 600;
+        }
+
+        .amanha-container {
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            padding-top: 20px;
+            margin-top: 5px;
+            text-align: left;
+        }
+
+        .amanha-titulo {
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        .amanha-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 12px 18px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .amanha-desc {
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .amanha-minmax {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .footer-update {
+            margin-top: 30px;
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Itapecerica da Serra</h1>
+            <p>Estado de São Paulo</p>
+        </header>
+
+        <section class="main-temp">
+            <div id="temp-atual" class="temp-atual">--°C</div>
+            <div id="condicao" class="condicao">Carregando...</div>
+        </section>
+
+        <main class="grid-info">
+            <div class="info-card">
+                <div class="info-icon">🌡️</div>
+                <div class="info-label">Mín / Máx</div>
+                <div id="temp-min-max" class="info-value">--°C / --°C</div>
+            </div>
+
+            <div class="info-card">
+                <div class="info-icon">👤</div>
+                <div class="info-label">Sensação</div>
+                <div id="sensacao" class="info-value">--°C</div>
+            </div>
+
+            <div class="info-card">
+                <div class="info-icon">💧</div>
+                <div class="info-label">Chuva</div>
+                <div id="chuva" class="info-value">--%</div>
+            </div>
+
+            <div class="info-card">
+                <div class="info-icon">💨</div>
+                <div class="info-label">Vento</div>
+                <div id="vento" class="info-value">-- km/h</div>
+            </div>
+        </main>
+
+        <section class="amanha-container">
+            <div class="amanha-titulo">📅 Amanhã</div>
+            <div class="amanha-flex">
+                <span id="amanha-condicao" class="amanha-desc">--</span>
+                <span id="amanha-minmax" class="amanha-minmax">--°C / --°C</span>
+            </div>
+        </section>
+
+        <footer id="atualizado" class="footer-update">
+            Buscando dados em tempo real...
+        </footer>
+    </div>
+
+    <script>
+        const LATITUDE = -23.7172;
+        const LONGITUDE = -46.8492;
+        const apiUrl = "https://open-meteo.com" + LATITUDE + "&longitude=" + LONGITUDE + "&current=temperature_2m,apparent_temperature,precipitation,wind_speed_10m,weather_code&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weather_code&timezone=America/Sao_Paulo";
+
+        const bgLimpo = 'linear-gradient(135deg, #2980b9 0%, #6dd5fa 100%)';
+        const bgNublado = 'linear-gradient(135deg, #bdc3c7 0%, #2c3e50 100%)';
+        const bgChuva = 'linear-gradient(135deg, #3a7bd5 0%, #3a6073 100%)';
+        const bgTemporal = 'linear-gradient(135deg, #141e30 0%, #243b55 100%)';
+
+        function traduzirCodigo(code) {
+            if (code <= 1) return { label: 'Céu Limpo', bg: bgLimpo };
+            if (code <= 3 || code === 45 || code === 48) return { label: 'Nublado', bg: bgNublado };
+            if (code >= 51 && code <= 82) return { label: 'Chuva', bg: bgChuva };
+            if (code >= 95) return { label: 'Tempestade', bg: bgTemporal };
+            return { label: 'Parcialmente Nublado', bg: bgLimpo };
+        }
+
+        async function buscarClima() {
+            try {
+                const response = await fetch(apiUrl);
+                if (!response.ok) throw new Error('Erro na API');
+                const data = await response.json();
+
+                // Hoje
+                const infoClima = traduzirCodigo(data.current.weather_code);
+                document.body.style.background = infoClima.bg;
+                document.getElementById('temp-atual').innerText = Math.round(data.current.temperature_2m) + "°C";
+                document.getElementById('condicao').innerText = infoClima.label;
+
+                // Mínima e Máxima Hoje (Acessando a primeira posição da lista)
+                const minHoje = Math.round(data.daily.temperature_2m_min.slice(0,1)[0]);
+                const maxHoje = Math.round(data.daily.temperature_2m_max.slice(0,1)[0]);
+                document.getElementById('temp-min-max').innerText = minHoje + "°C / " + maxHoje + "°C";
+
+                document.getElementById('sensacao').innerText = Math.round(data.current.apparent_temperature) + "°C";
+
+                const probChuvaHoje = data.daily.precipitation_probability_max.slice(0,1)[0];
+                document.getElementById('chuva').innerText = probChuvaHoje + "%";
+                document.getElementById('vento').innerText = Math.round(data.current.wind_speed_10m) + " km/h";
+
+                // Amanhã (Acessando a segunda posição da lista)
+                const codAmanha = data.daily.weather_code.slice(1,2)[0];
+                const infoAmanha = traduzirCodigo(codAmanha);
+                const minAmanha = Math.round(data.daily.temperature_2m_min.slice(1,2)[0]);
+                const maxAmanha = Math.round(data.daily.temperature_2m_max.slice(1,2)[0]);
+
+                document.getElementById('amanha-condicao').innerText = infoAmanha.label;
+                document.getElementById('amanha-minmax').innerText = minAmanha + "°C / " + maxAmanha + "°C";
+
+                const agora = new Date();
+                const horarioFormatado = agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+                document.getElementById('atualizado').innerText = "Dados online atualizados automaticamente às " + horarioFormatado;
+
+            } catch (error) {
+                console.error(error);
+                document.getElementById('condicao').innerText = 'Erro de sincronização';
+            }
+        }
+
+        buscarClima();
+        setInterval(buscarClima, 600000); // Sincroniza a cada 10 minutos automaticamente
+    </script>
+</body>
+</html>
