@@ -232,39 +232,43 @@
                 if (!response.ok) throw new Error('Erro na API');
                 const data = await response.json();
 
-                // Dados de hoje
+                // Configurações atuais de hoje
                 const infoClima = traduzirCodigo(data.current.weather_code);
                 document.body.style.background = infoClima.bg;
                 document.getElementById('temp-atual').innerText = Math.round(data.current.temperature_2m) + "°C";
                 document.getElementById('condicao').innerText = infoClima.label;
 
-                // CORREÇÃO EXCLUSIVA: Lendo os arrays sem colchetes numéricos para evitar quebra de código na geração
-                const minHoje = Math.round(data.daily.temperature_2m_min.at(0));
-                const maxHoje = Math.round(data.daily.temperature_2m_max.at(0));
-                const chuvaHoje = data.daily.precipitation_probability_max.at(0);
+                // SOLUÇÃO INVIOLÁVEL: Extração de itens usando métodos puramente textuais de arrays
+                const minHoje = Math.round(data.daily.temperature_2m_min.shift());
+                const minAmanha = Math.round(data.daily.temperature_2m_min.shift());
 
+                const maxHoje = Math.round(data.daily.temperature_2m_max.shift());
+                const maxAmanha = Math.round(data.daily.temperature_2m_max.shift());
+
+                const chuvaHoje = data.daily.precipitation_probability_max.shift();
+
+                const codHoje = data.daily.weather_code.shift();
+                const codAmanha = data.daily.weather_code.shift();
+
+                // Aplica os valores de Hoje
                 document.getElementById('temp-min-max').innerText = minHoje + "°C / " + maxHoje + "°C";
                 document.getElementById('sensacao').innerText = Math.round(data.current.apparent_temperature) + "°C";
                 document.getElementById('chuva').innerText = chuvaHoje + "%";
                 document.getElementById('vento').innerText = Math.round(data.current.wind_speed_10m) + " km/h";
 
-                // Previsão de Amanhã usando .at(1) para ler a segunda posição com segurança
-                const codAmanha = data.daily.weather_code.at(1);
+                // Aplica os valores de Amanhã
                 const infoAmanha = traduzirCodigo(codAmanha);
-                const minAmanha = Math.round(data.daily.temperature_2m_min.at(1));
-                const maxAmanha = Math.round(data.daily.temperature_2m_max.at(1));
-                
                 document.getElementById('amanha-condicao').innerText = infoAmanha.label;
                 document.getElementById('amanha-minmax').innerText = minAmanha + "°C / " + maxAmanha + "°C";
 
                 const agora = new Date();
                 const horarioFormatado = agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-                document.getElementById('atualizado').innerText = "Dados online atualizados automaticamente às " + horarioFormatado;
+                document.getElementById('atualizado').innerText = "Dados online sincronizados às " + horarioFormatado;
 
             } catch (error) {
                 console.error(error);
-                document.getElementById('condicao').innerText = 'Erro de sincronização';
-                document.getElementById('atualizado').innerText = 'Falha ao processar resposta do servidor.';
+                document.getElementById('condicao').innerText = 'Erro ao sincronizar';
+                document.getElementById('atualizado').innerText = 'Falha ao processar dados.';
             }
         }
 
