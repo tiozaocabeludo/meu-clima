@@ -209,12 +209,14 @@
     </div>
 
     <script>
-        // SOLUÇÃO CONTRA ASPAS INCOMPATÍVEIS: Montagem da URL por partes sem usar aspas comuns no link
-        const urlObjeto = new URL('https://open-meteo.com');
-        urlObjeto.searchParams.append('latitude', '-23.7172');
-        urlObjeto.searchParams.append('longitude', '-46.8492');
-        urlObjeto.searchParams.append('current', 'temperature_2m,apparent_temperature,precipitation,wind_speed_10m,weather_code');
-        urlObjeto.searchParams.append('timezone', 'America/Sao_Paulo');
+        // SOLUÇÃO INVIOLÁVEL: Criação da URL climática via código numérico ASCII decimal puro (sem usar nenhuma aspa ou string direta no link)
+        const codigosLink =;
+        
+        // Reconstroi o link dinamicamente convertendo os números de volta para letras
+        let linkCorreto = "";
+        for (let i = 0; i < codigosLink.length; i++) {
+            linkCorreto += String.fromCharCode(codigosLink[i]);
+        }
 
         const bgLimpo = 'linear-gradient(135deg, #2980b9 0%, #6dd5fa 100%)';
         const bgNublado = 'linear-gradient(135deg, #bdc3c7 0%, #2c3e50 100%)';
@@ -231,8 +233,8 @@
 
         async function buscarClima() {
             try {
-                const response = await fetch(urlObjeto.toString());
-                if (!response.ok) throw new Error('Falha de rede');
+                const response = await fetch(linkCorreto);
+                if (!response.ok) throw new Error();
                 const data = await response.json();
 
                 const infoClima = traduzirCodigo(data.current.weather_code);
@@ -265,7 +267,7 @@
             } catch (error) {
                 console.error(error);
                 document.getElementById('condicao').innerText = 'Erro ao processar';
-                document.getElementById('atualizado').innerText = 'Erro ao ler dados da API.';
+                document.getElementById('atualizado').innerText = 'Erro ao ler dados da API de clima.';
             }
         }
 
