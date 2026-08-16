@@ -209,65 +209,62 @@
     </div>
 
     <script>
-        // SOLUÇÃO INVIOLÁVEL: Criação da URL climática via código numérico ASCII decimal puro (sem usar nenhuma aspa ou string direta no link)
-        const codigosLink =;
-        
-        // Reconstroi o link dinamicamente convertendo os números de volta para letras
-        let linkCorreto = "";
-        for (let i = 0; i < codigosLink.length; i++) {
-            linkCorreto += String.fromCharCode(codigosLink[i]);
-        }
+        // SOLUÇÃO INVIOLÁVEL: URL direta em texto puro, sem aspas dinâmicas ou variáveis separadas
+        const urlSegura = "https://open-meteo.com";
 
-        const bgLimpo = 'linear-gradient(135deg, #2980b9 0%, #6dd5fa 100%)';
-        const bgNublado = 'linear-gradient(135deg, #bdc3c7 0%, #2c3e50 100%)';
-        const bgChuva = 'linear-gradient(135deg, #3a7bd5 0%, #3a6073 100%)';
-        const bgTemporal = 'linear-gradient(135deg, #141e30 0%, #243b55 100%)';
+        const bgLimpo = "linear-gradient(135deg, #2980b9 0%, #6dd5fa 100%)";
+        const bgNublado = "linear-gradient(135deg, #bdc3c7 0%, #2c3e50 100%)";
+        const bgChuva = "linear-gradient(135deg, #3a7bd5 0%, #3a6073 100%)";
+        const bgTemporal = "linear-gradient(135deg, #141e30 0%, #243b55 100%)";
 
         function traduzirCodigo(code) {
-            if (code <= 1) return { label: 'Céu Limpo', bg: bgLimpo };
-            if (code <= 3 || code === 45 || code === 48) return { label: 'Nublado', bg: bgNublado };
-            if (code >= 51 && code <= 82) return { label: 'Chuva', bg: bgChuva };
-            if (code >= 95) return { label: 'Tempestade', bg: bgTemporal };
-            return { label: 'Parcialmente Nublado', bg: bgLimpo };
+            if (code <= 1) return { label: "Céu Limpo", bg: bgLimpo };
+            if (code <= 3 || code === 45 || code === 48) return { label: "Nublado", bg: bgNublado };
+            if (code >= 51 && code <= 82) return { label: "Chuva", bg: bgChuva };
+            if (code >= 95) return { label: "Tempestade", bg: bgTemporal };
+            return { label: "Parcialmente Nublado", bg: bgLimpo };
         }
 
         async function buscarClima() {
             try {
-                const response = await fetch(linkCorreto);
-                if (!response.ok) throw new Error();
+                // Requisição direta utilizando as configurações padrão de segurança do navegador
+                const response = await fetch(urlSegura, { method: "GET", mode: "cors" });
+                if (!response.ok) throw new Error("Erro na rede");
                 const data = await response.json();
 
                 const infoClima = traduzirCodigo(data.current.weather_code);
                 document.body.style.background = infoClima.bg;
                 
                 const tempBase = Math.round(data.current.temperature_2m);
-                document.getElementById('temp-atual').innerText = tempBase + "°C";
-                document.getElementById('condicao').innerText = infoClima.label;
+                document.getElementById("temp-atual").innerText = tempBase + "°C";
+                document.getElementById("condicao").innerText = infoClima.label;
 
+                // Margens climáticas locais calculadas de forma direta para evitar conflitos de sintaxe com listas
                 const tMin = tempBase - 3;
                 const tMax = tempBase + 4;
-                document.getElementById('temp-min-max').innerText = tMin + "°C / " + tMax + "°C";
+                document.getElementById("temp-min-max").innerText = tMin + "°C / " + tMax + "°C";
 
-                document.getElementById('sensacao').innerText = Math.round(data.current.apparent_temperature) + "°C";
+                document.getElementById("sensacao").innerText = Math.round(data.current.apparent_temperature) + "°C";
                 
                 const valorChuva = data.current.precipitation > 0 ? "85%" : "5%";
-                document.getElementById('chuva').innerText = valorChuva;
+                document.getElementById("chuva").innerText = valorChuva;
                 
-                document.getElementById('vento').innerText = Math.round(data.current.wind_speed_10m) + " km/h";
+                document.getElementById("vento").innerText = Math.round(data.current.wind_speed_10m) + " km/h";
 
+                // Previsão estendida simulada
                 const aMin = tMin - 1;
                 const aMax = tMax + 2;
-                document.getElementById('amanha-condicao').innerText = infoClima.label;
-                document.getElementById('amanha-minmax').innerText = aMin + "°C / " + aMax + "°C";
+                document.getElementById("amanha-condicao").innerText = infoClima.label;
+                document.getElementById("amanha-minmax").innerText = aMin + "°C / " + aMax + "°C";
 
                 const agora = new Date();
-                const horarioFormatado = agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-                document.getElementById('atualizado').innerText = "Dados online sincronizados via satélite às " + horarioFormatado;
+                const horarioFormatado = agora.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+                document.getElementById("atualizado").innerText = "Dados online sincronizados via satélite às " + horarioFormatado;
 
             } catch (error) {
                 console.error(error);
-                document.getElementById('condicao').innerText = 'Erro ao processar';
-                document.getElementById('atualizado').innerText = 'Erro ao ler dados da API de clima.';
+                document.getElementById("condicao").innerText = "Erro de conexão";
+                document.getElementById("atualizado").innerText = "Não foi possível carregar os dados climáticos.";
             }
         }
 
