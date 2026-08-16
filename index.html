@@ -209,8 +209,12 @@
     </div>
 
     <script>
-        // MUDANÇA: Usando a URL com codificação HTTP segura padrão para evitar bloqueios de segurança do GitHub
-        const apiUrl = "https://open-meteo.com";
+        // SOLUÇÃO CONTRA ASPAS INCOMPATÍVEIS: Montagem da URL por partes sem usar aspas comuns no link
+        const urlObjeto = new URL('https://open-meteo.com');
+        urlObjeto.searchParams.append('latitude', '-23.7172');
+        urlObjeto.searchParams.append('longitude', '-46.8492');
+        urlObjeto.searchParams.append('current', 'temperature_2m,apparent_temperature,precipitation,wind_speed_10m,weather_code');
+        urlObjeto.searchParams.append('timezone', 'America/Sao_Paulo');
 
         const bgLimpo = 'linear-gradient(135deg, #2980b9 0%, #6dd5fa 100%)';
         const bgNublado = 'linear-gradient(135deg, #bdc3c7 0%, #2c3e50 100%)';
@@ -227,8 +231,8 @@
 
         async function buscarClima() {
             try {
-                const response = await fetch(apiUrl);
-                if (!response.ok) throw new Error('A resposta da rede não foi satisfatória.');
+                const response = await fetch(urlObjeto.toString());
+                if (!response.ok) throw new Error('Falha de rede');
                 const data = await response.json();
 
                 const infoClima = traduzirCodigo(data.current.weather_code);
@@ -259,7 +263,7 @@
                 document.getElementById('atualizado').innerText = "Dados online sincronizados via satélite às " + horarioFormatado;
 
             } catch (error) {
-                console.error("Erro interno detalhado:", error);
+                console.error(error);
                 document.getElementById('condicao').innerText = 'Erro ao processar';
                 document.getElementById('atualizado').innerText = 'Erro ao ler dados da API.';
             }
